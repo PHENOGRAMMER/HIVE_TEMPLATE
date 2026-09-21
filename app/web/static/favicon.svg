@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Hive">
+  <rect width="64" height="64" rx="14" fill="#0f172a"/>
+  <path d="M32 8 51 19v26L32 56 13 45V19L32 8Z" fill="none" stroke="#fbbf24" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M24 21h16l-2.5 6h-11L24 21Zm-5 10h26l-3 7H22l-3-7Zm-2 11h30l-5 8H22l-5-8Z" fill="#fbbf24"/>
+  <path d="M29 50v-5a3 3 0 0 1 6 0v5" fill="#0f172a"/>
+</svg>
