@@ -1,0 +1,327 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Import Preview
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+        <h1>Import Preview</h1>
+
+        <p class="muted">
+            Review the template before saving it.
+        </p>
+    </div>
+
+    <a
+        href="/import"
+        class="button secondary"
+    >
+        Cancel
+    </a>
+
+</div>
+
+
+<!-- Template summary -->
+
+<div class="preview-card">
+
+    <div class="preview-header">
+
+        <div>
+            <h2>
+                {{ template.name }}
+            </h2>
+
+            <p class="muted">
+                Source: {{ template.source }}
+            </p>
+
+            <p class="muted">
+                File: {{ template.source_file }}
+            </p>
+        </div>
+
+        <span class="ready-badge">
+            Ready to import
+        </span>
+
+    </div>
+
+
+    <div class="stats-grid">
+
+        <div class="stat">
+            <strong>{{ rows_processed }}</strong>
+            <span>Rows processed</span>
+        </div>
+
+        <div class="stat">
+            <strong>{{ section_count }}</strong>
+            <span>Sections</span>
+        </div>
+
+        <div class="stat">
+            <strong>{{ item_count }}</strong>
+            <span>Items</span>
+        </div>
+
+        <div class="stat">
+            <strong>{{ field_count }}</strong>
+            <span>Fields</span>
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- Answer type breakdown -->
+
+<div class="preview-grid">
+
+    <div class="preview-card">
+
+        <h2>Answer Types</h2>
+
+        {% for answer_type, count in answer_type_counts.items() %}
+
+        <div class="breakdown-row">
+
+            <span>{{ answer_type }}</span>
+
+            <strong>{{ count }}</strong>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+
+    <div class="preview-card">
+
+        <h2>Comment Types</h2>
+
+        {% for comment_type, count in comment_type_counts.items() %}
+
+        <div class="breakdown-row">
+
+            <span>{{ comment_type }}</span>
+
+            <strong>{{ count }}</strong>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+
+<div class="preview-card">
+
+    <h2>Migration Coverage</h2>
+
+    <div class="coverage-section">
+
+        <h3>Imported</h3>
+
+        <div class="breakdown-row">
+            <span>Sections</span>
+            <strong>
+                {{ coverage.sections_imported }}
+            </strong>
+        </div>
+
+        <div class="breakdown-row">
+            <span>Items</span>
+            <strong>
+                {{ coverage.items_imported }}
+            </strong>
+        </div>
+
+        <div class="breakdown-row">
+            <span>Fields</span>
+            <strong>
+                {{ coverage.fields_imported }}
+            </strong>
+        </div>
+
+    </div>
+
+    <div class="coverage-section">
+
+        <h3>Preserved Source Metadata</h3>
+
+        <div class="breakdown-row">
+            <span>Additional metadata columns</span>
+            <strong>
+                {{ coverage.metadata_columns_preserved }}
+            </strong>
+        </div>
+
+    </div>
+
+    <div class="coverage-section">
+
+        <h3>Rich Content Detected</h3>
+
+        <div class="breakdown-row">
+            <span>Rows containing HTML</span>
+            <strong>
+                {{ coverage.html_rows_detected }}
+            </strong>
+        </div>
+
+        <div class="breakdown-row">
+            <span>Rows containing links</span>
+            <strong>
+                {{ coverage.link_rows_detected }}
+            </strong>
+        </div>
+
+    </div>
+
+    <div class="coverage-section">
+
+        <h3>Photos</h3>
+
+        <div class="breakdown-row">
+            <span>Default photo columns</span>
+            <strong>
+                {{ coverage.photo_columns_detected }}
+            </strong>
+        </div>
+
+        <div class="breakdown-row">
+            <span>Populated default photos</span>
+            <strong>
+                {{ coverage.populated_photo_values }}
+            </strong>
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- Issues -->
+
+{% if issues %}
+
+<div class="preview-card">
+
+    <h2>Import Issues</h2>
+
+    {% for issue in issues %}
+
+    <div class="issue {{ issue.severity }}">
+
+        {% if issue.row %}
+        <strong>Row {{ issue.row }}:</strong>
+        {% endif %}
+
+        {{ issue.message }}
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="success-message">
+
+    <strong>
+        ✓ No validation errors detected
+    </strong>
+
+    <span>
+        The template is ready to import.
+    </span>
+
+</div>
+
+{% endif %}
+
+
+<!-- Section preview -->
+
+<div class="preview-card">
+
+    <h2>Template Structure</h2>
+
+    <div class="structure-list">
+
+        {% for section in template.sections[:5] %}
+
+        <div class="structure-section">
+
+            <strong>
+                {{ section.position + 1 }}.
+                {{ section.name }}
+            </strong>
+
+            <span>
+                {{ section.items|length }} items
+            </span>
+
+        </div>
+
+        {% endfor %}
+
+        {% if template.sections|length > 5 %}
+
+        <p class="muted">
+            + {{ template.sections|length - 5 }}
+            more sections
+        </p>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<!-- Confirm import -->
+
+<div class="import-actions">
+
+    <a
+        href="/import"
+        class="button secondary"
+    >
+        Cancel
+    </a>
+
+    <form
+        method="post"
+        action="/import/confirm"
+    >
+
+        <input
+            type="hidden"
+            name="token"
+            value="{{ token }}"
+        >
+
+        <button
+            type="submit"
+            class="button"
+        >
+            Import Template
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

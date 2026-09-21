@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Templates{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>Templates</h1>
+        <p class="muted">
+            Imported inspection templates
+        </p>
+    </div>
+
+    <a href="/import" class="button">
+        + Import Template
+    </a>
+</div>
+
+{% if templates %}
+
+<div class="template-grid">
+
+    {% for template in templates %}
+
+    <article class="card">
+
+        <h2>
+            {{ template.name }}
+        </h2>
+
+        <p class="muted">
+            Source: {{ template.source }}
+        </p>
+
+        <p class="muted">
+            {{ template.sections|length }}
+            sections
+        </p>
+
+        <a
+            href="/templates/{{ template.id }}"
+            class="button secondary"
+        >
+            Open
+        </a>
+
+        <form
+            method="post"
+            action="/templates/{{ template.id }}/duplicate"
+            class="inline-form"
+        >
+            <button
+                type="submit"
+                class="button secondary"
+            >
+                Duplicate
+            </button>
+        </form>
+
+    </article>
+
+    {% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="empty-state">
+    <h2>No templates yet</h2>
+
+    <p>
+        Import your Spectora template to get started.
+    </p>
+
+    <a href="/import" class="button">
+        Import Template
+    </a>
+</div>
+
+{% endif %}
+
+{% endblock %}

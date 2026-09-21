@@ -1,0 +1,339 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ template.name }}
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+        <h1>{{ template.name }}</h1>
+
+        <p class="muted">
+            Source: {{ template.source }}
+            &middot;
+            {{ template.source_file }}
+        </p>
+
+        <div class="template-stats">
+
+            <div class="stat">
+                <strong>{{ section_count }}</strong>
+                <span>Sections</span>
+            </div>
+
+            <div class="stat">
+                <strong>{{ item_count }}</strong>
+                <span>Items</span>
+            </div>
+
+            <div class="stat">
+                <strong>{{ field_count }}</strong>
+                <span>Fields</span>
+            </div>
+
+        </div>
+
+        <p class="muted template-meta">
+            Imported structure and additional source metadata preserved.
+        </p>
+    </div>
+
+    <div class="page-actions">
+
+        <form
+            method="post"
+            action="/templates/{{ template.id }}/duplicate"
+            class="inline-form"
+        >
+            <button
+                type="submit"
+                class="button"
+            >
+                Duplicate
+            </button>
+        </form>
+
+        <a
+            href="/"
+            class="button secondary"
+        >
+            Back
+        </a>
+
+    </div>
+
+</div>
+
+<div class="template-layout">
+
+    <aside class="sidebar">
+
+        <h3>Sections</h3>
+
+        {% for section in template.sections %}
+
+        <div class="sidebar-section">
+
+            <div>
+                <strong>
+                    {{ section.name }}
+                </strong>
+
+                <div class="muted sidebar-meta">
+                    {{ section.items|length }}
+                    {% if section.items|length == 1 %}
+                        item
+                    {% else %}
+                        items
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </aside>
+
+    <section>
+
+        {% for section in template.sections %}
+
+        <div class="section-card">
+
+            <!-- Section header -->
+            <div class="section-header">
+
+                <h2>
+                    {{ section.name }}
+                </h2>
+
+                <button
+                    type="button"
+                    class="button secondary"
+                    onclick="toggleEdit('section-{{ section.id }}')"
+                >
+                    Edit
+                </button>
+
+            </div>
+
+            <!-- Section edit form -->
+            <form
+                id="section-{{ section.id }}"
+                class="edit-form hidden"
+                method="post"
+                action="/sections/{{ section.id }}/name"
+            >
+
+                <input
+                    type="text"
+                    name="name"
+                    value="{{ section.name }}"
+                    required
+                >
+
+                <button
+                    type="submit"
+                    class="button"
+                >
+                    Save
+                </button>
+
+                <button
+                    type="button"
+                    class="button secondary"
+                    onclick="toggleEdit('section-{{ section.id }}')"
+                >
+                    Cancel
+                </button>
+
+            </form>
+
+
+            <!-- Items -->
+            {% for item in section.items %}
+
+            <div class="item-card">
+
+                <div class="item-header">
+
+                    <h3>
+                        {{ item.name }}
+                    </h3>
+
+                    <button
+                        type="button"
+                        class="button secondary"
+                        onclick="toggleEdit('item-{{ item.id }}')"
+                    >
+                        Edit
+                    </button>
+
+                </div>
+
+                <form
+                    id="item-{{ item.id }}"
+                    class="edit-form hidden"
+                    method="post"
+                    action="/items/{{ item.id }}/name"
+                >
+                    <input
+                        type="text"
+                        name="name"
+                        value="{{ item.name }}"
+                        required
+                    >
+
+                    <button
+                        type="submit"
+                        class="button"
+                    >
+                        Save
+                    </button>
+
+                    <button
+                        type="button"
+                        class="button secondary"
+                        onclick="toggleEdit('item-{{ item.id }}')"
+                    >
+                        Cancel
+                    </button>
+                </form>
+
+
+                <!-- Fields -->
+                {% for field in item.fields %}
+
+                <div class="field-card">
+
+                    <div class="field-header">
+
+                        <strong>
+                            {{ field.name }}
+                        </strong>
+
+                        <span class="badge">
+                            {{ field.answer_type }}
+                        </span>
+
+                        <span class="badge">
+                            {{ field.comment_type }}
+                        </span>
+
+                    </div>
+
+
+                    <!-- Multiple choice options -->
+                    {% if field.options %}
+
+                    <div class="field-options">
+
+                        {% for option in field.options %}
+
+                        <span class="option">
+                            {{ option }}
+                        </span>
+
+                        {% endfor %}
+
+                    </div>
+
+                    {% endif %}
+
+
+                    <div class="comment-section">
+
+                        <div class="comment-label">
+                            Comment
+                        </div>
+
+                        {% if field.comment_text %}
+
+                        <div class="comment">
+                            {{ field.comment_text | sanitize_html }}
+                        </div>
+
+                        {% else %}
+
+                        <div class="comment empty-comment">
+                            No comment text
+                        </div>
+
+                        {% endif %}
+
+                        <button
+                            type="button"
+                            class="button secondary"
+                            onclick="toggleEdit('field-{{ field.id }}')"
+                        >
+                            Edit Comment
+                        </button>
+
+                        <form
+                            id="field-{{ field.id }}"
+                            class="edit-form hidden"
+                            method="post"
+                            action="/fields/{{ field.id }}/comment"
+                        >
+
+                            <textarea
+                                name="comment_text"
+                                rows="6"
+                                placeholder="Enter comment text..."
+                            >{{ field.comment_text or "" }}</textarea>
+
+                            <div class="edit-actions">
+
+                                <button
+                                    type="submit"
+                                    class="button"
+                                >
+                                    Save Comment
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="button secondary"
+                                    onclick="toggleEdit('field-{{ field.id }}')"
+                                >
+                                    Cancel
+                                </button>
+
+                            </div>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+        {% endfor %}
+
+    </section>
+
+</div>
+
+
+<script>
+function toggleEdit(id) {
+    const element = document.getElementById(id);
+
+    if (element) {
+        element.classList.toggle("hidden");
+    }
+}
+</script>
+
+{% endblock %}

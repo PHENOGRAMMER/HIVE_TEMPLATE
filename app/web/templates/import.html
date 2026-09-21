@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Import Template{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>Import Template</h1>
+
+        <p class="muted">
+            Upload a Spectora Excel template export.
+        </p>
+    </div>
+</div>
+
+{% if error %}
+
+<div class="alert error">
+
+    <div class="alert-title">
+        Import failed
+    </div>
+
+    <p>
+        {{ error }}
+    </p>
+
+    {% if issues %}
+
+    <ul class="issue-list">
+
+        {% for issue in issues %}
+
+        <li>
+
+            {% if issue.row %}
+                <strong>Row {{ issue.row }}:</strong>
+            {% endif %}
+
+            {{ issue.message }}
+
+        </li>
+
+        {% endfor %}
+
+    </ul>
+
+    {% endif %}
+
+    <p class="muted">
+        No changes were made to the database.
+    </p>
+
+</div>
+
+{% endif %}
+
+<form
+    method="post"
+    action="/import/preview"
+    enctype="multipart/form-data"
+    class="card form-card"
+>
+
+    <label>
+        Template Name
+        <input
+            type="text"
+            name="template_name"
+            value="InterNACHI Residential"
+            required
+        >
+    </label>
+
+    <label>
+        Spectora XLS/XLSX File
+        <input
+            type="file"
+            name="file"
+            accept=".xls,.xlsx"
+            required
+        >
+    </label>
+
+    <button
+        type="submit"
+        class="button"
+    >
+        Import Template
+    </button>
+
+</form>
+
+{% endblock %}
